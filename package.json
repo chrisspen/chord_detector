@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "serve",
     "build": "make; cd docs; browserify demo.js -o bundle.js"
   },
   "repository": {
@@ -26,7 +27,9 @@
   "homepage": "https://github.com/myers/chord_detector#readme",
   "devDependencies": {
     "browserify": "^13.1.0",
-    "webworkify": "^1.4.0"
+    "webworkify": "^1.5.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "serve": "^11.3.2"
+  }
 }

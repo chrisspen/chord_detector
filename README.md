@@ -14,9 +14,14 @@ This is a javascript wrapper that uses [Emscripten] to wrap [Adam Stark]'s [Chor
 # Building
 
 ```bash
-git submodule update --init # pull in Chord-Detector-and-Chromagram
-npm run build # requires emscripten's emcc to be on your path
+git submodule update --init
+npm install webworkify
+npm install serve
+source ~/git/emsdk/emsdk_env.sh
+npm run build
+npm run serve
 ```
+
 # Demo
 
 [Demo](https://myers.github.com/chord_detector/) where you can play different sound clips of a chord and see what is detected.

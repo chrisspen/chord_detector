@@ -97,5 +97,6 @@ ChordDetector._getIntervals = Module.cwrap('ChordDetector_getIntervals', 'number
 
 module.exports = {
   Chromagram: Chromagram,
-  ChordDetector: ChordDetector
+  ChordDetector: ChordDetector,
+  Module: Module
 }

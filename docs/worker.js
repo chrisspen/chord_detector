@@ -1,11 +1,22 @@
-const cd = require("../index.js")
+let cd = require("../index.js")
 
-const chromagram = new cd.Chromagram(1024, 44100)
-const chordDetector = new cd.ChordDetector()
+let chromagram;
+let chordDetector;
+let initialized = false;
+
+cd.Module.onRuntimeInitialized = function() {
+  console.log('onRuntimeInitialized')
+  chromagram = new cd.Chromagram(1024, 44100)
+  chordDetector = new cd.ChordDetector()
+  initialized = true;
+}
 
 module.exports = function (self) {
   self.firstSampleArrivedAt = null;
   self.addEventListener('message', function (ev) {
+    if(!initialized){
+      return false;
+    }
     if (!ev.data.hasOwnProperty('audioData')) {
       console.log("expected audioData")
     }
