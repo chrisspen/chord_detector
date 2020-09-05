@@ -8,24 +8,23 @@ $(function() {
 
   var output = $('#chord-detection')
 
-  $('audio').on('play', function(event) {
-    // pause and reset other elements
-    $('audio').each((idx, el) => {
-      if (el == this) return
-      el.pause()
-      el.currentTime = 0
-    })
+  //$('audio').on('play', function(event) {
+    //// pause and reset other elements
+    //$('audio').each((idx, el) => {
+      //if (el == this) return
+      //el.pause()
+      //el.currentTime = 0
+    //})
 
-    source = audioCtx.createMediaElementSource(this)
-    $(this).on('ended', () => {
-      currentChroma.fill(0)
-      source.disconnect()
-      this.currentTime = 0
-    })
-    source.connect(scriptNode)
-    source.connect(audioCtx.destination)
-  })
-
+    //source = audioCtx.createMediaElementSource(this)
+    //$(this).on('ended', () => {
+      //currentChroma.fill(0)
+      //source.disconnect()
+      //this.currentTime = 0
+    //})
+    //source.connect(scriptNode)
+    //source.connect(audioCtx.destination)
+  //})
 
   $('#chroma-visualizer').html('<canvas width="800" height="256">');
   visualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
@@ -36,6 +35,7 @@ $(function() {
   gradient.addColorStop(0, '#e74c3c');
   visualizationCtx.font="20px Georgia";
   notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
   function updateVisualization() {
     requestAnimationFrame(updateVisualization);
 
@@ -63,4 +63,5 @@ $(function() {
     chromagramWorker.postMessage({audioData: audioData, sentAt: performance.now()})
   }
   scriptNode.connect(audioCtx.destination)
+  
 })

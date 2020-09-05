@@ -5,27 +5,32 @@ var webworkify = require('webworkify');
 var chromagramWorker = webworkify(require('./worker.js'))
 
 $(function() {
-  const audioCtx = new AudioContext();
+  let audioCtx;// = new AudioContext();
+  let source;
+  let processor;
 
   var output = $('#chord-detection')
 
-  $('audio').on('play', function(event) {
-    // pause and reset other elements
-    $('audio').each((idx, el) => {
-      if (el == this) return
-      el.pause()
-      el.currentTime = 0
-    })
+  const player = document.getElementById('player');
 
-    source = audioCtx.createMediaElementSource(this)
-    $(this).on('ended', () => {
-      currentChroma.fill(0)
-      source.disconnect()
-      this.currentTime = 0
-    })
-    source.connect(scriptNode)
-    source.connect(audioCtx.destination)
-  })
+
+  //$('audio').on('play', function(event) {
+    //// pause and reset other elements
+    //$('audio').each((idx, el) => {
+      //if (el == this) return
+      //el.pause()
+      //el.currentTime = 0
+    //})
+
+    //source = audioCtx.createMediaElementSource(this)
+    //$(this).on('ended', () => {
+      //currentChroma.fill(0)
+      //source.disconnect()
+      //this.currentTime = 0
+    //})
+    //source.connect(scriptNode)
+    //source.connect(audioCtx.destination)
+  //})
 
 
   $('#chroma-visualizer').html('<canvas width="800" height="256">');
@@ -58,12 +63,25 @@ $(function() {
     currentChroma = ev.data.currentChroma
     output.html("Is it " + ev.data.rootNote + " " + ev.data.quality + " " + ev.data.intervals + "?")
   })
-  const scriptNode = audioCtx.createScriptProcessor(1024, 1, 1)
-  scriptNode.onaudioprocess = function(event) {
-    var audioData = event.inputBuffer.getChannelData(0)
-    chromagramWorker.postMessage({audioData: audioData, sentAt: performance.now()})
-  }
-  scriptNode.connect(audioCtx.destination)
+
+  const handleSuccess = function(stream) {
+
+    audioCtx = new AudioContext();
+    source = audioCtx.createMediaStreamSource(stream);
+    processor = audioCtx.createScriptProcessor(1024, 1, 1);
+
+    source.connect(processor);
+    processor.connect(audioCtx.destination);
+    
+    processor.onaudioprocess = function(event) {
+      var audioData = event.inputBuffer.getChannelData(0)
+      chromagramWorker.postMessage({audioData: audioData, sentAt: performance.now()})
+    }
+    processor.connect(audioCtx.destination)
+  
+  };
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+
 })
 
 },{"./worker.js":2,"webworkify":4}],2:[function(require,module,exports){

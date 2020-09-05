@@ -3,5 +3,6 @@
 /index.wasm
 /node_modules
 /notes
-*.out
 /package-lock.json
+*.out
+*.geany
