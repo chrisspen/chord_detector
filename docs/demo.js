@@ -4,9 +4,14 @@ var webworkify = require('webworkify');
 var chromagramWorker = webworkify(require('./worker.js'))
 
 $(function() {
-  const audioCtx = new AudioContext();
+  let audioCtx;// = new AudioContext();
+  let source;
+  let processor;
 
   var output = $('#chord-detection')
+
+  const player = document.getElementById('player');
+
 
   //$('audio').on('play', function(event) {
     //// pause and reset other elements
@@ -26,6 +31,7 @@ $(function() {
     //source.connect(audioCtx.destination)
   //})
 
+
   $('#chroma-visualizer').html('<canvas width="800" height="256">');
   visualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
   const gradient = visualizationCtx.createLinearGradient(0, 0, 0, 512);
@@ -35,7 +41,6 @@ $(function() {
   gradient.addColorStop(0, '#e74c3c');
   visualizationCtx.font="20px Georgia";
   notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-
   function updateVisualization() {
     requestAnimationFrame(updateVisualization);
 
@@ -57,11 +62,23 @@ $(function() {
     currentChroma = ev.data.currentChroma
     output.html("Is it " + ev.data.rootNote + " " + ev.data.quality + " " + ev.data.intervals + "?")
   })
-  const scriptNode = audioCtx.createScriptProcessor(1024, 1, 1)
-  scriptNode.onaudioprocess = function(event) {
-    var audioData = event.inputBuffer.getChannelData(0)
-    chromagramWorker.postMessage({audioData: audioData, sentAt: performance.now()})
-  }
-  scriptNode.connect(audioCtx.destination)
+
+  const handleSuccess = function(stream) {
+
+    audioCtx = new AudioContext();
+    source = audioCtx.createMediaStreamSource(stream);
+    processor = audioCtx.createScriptProcessor(1024, 1, 1);
+
+    source.connect(processor);
+    processor.connect(audioCtx.destination);
+    
+    processor.onaudioprocess = function(event) {
+      var audioData = event.inputBuffer.getChannelData(0)
+      chromagramWorker.postMessage({audioData: audioData, sentAt: performance.now()})
+    }
+    processor.connect(audioCtx.destination)
   
+  };
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+
 })
