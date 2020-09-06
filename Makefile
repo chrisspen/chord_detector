@@ -15,4 +15,4 @@ server:
 	cd docs; python -m SimpleHTTPServer
 
 clean:
-	rm -f build/*.o ./index.js ./index.wasm ./docs/bundle.js
+	rm -f build/*.o ./index.js ./index.wasm ./bundle.js

@@ -35,6 +35,7 @@ Chromagram._destructor = Module.cwrap('Chromagram_destructor', null, ['number'])
 Chromagram._processAudioFrame = Module.cwrap('Chromagram_processAudioFrame', null, ['number'])
 Chromagram._isReady = Module.cwrap('Chromagram_isReady', 'number', ['number'])
 Chromagram._getChromagram = Module.cwrap('Chromagram_getChromagram', 'number', ['number', 'number'])
+Chromagram._getPitches = Module.cwrap('Chromagram_getPitches', 'number', ['number', 'number'])
 
 
 function ChordDetector() {

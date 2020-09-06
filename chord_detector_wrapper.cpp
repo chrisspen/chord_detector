@@ -34,6 +34,13 @@ extern "C" {
         }
     }
 
+    void Chromagram_getPitches(Chromagram *c, double* chromaDest) {
+        std::vector<double> chroma = c->getPitches();
+        for(int ii = 0; ii < 12*2; ii++) { //TODO:dynamically lookup length?
+            chromaDest[ii] = chroma[ii];
+        }
+    }
+
 
     void *ChordDetector_constructor() {
         ChordDetector *c = new ChordDetector();
