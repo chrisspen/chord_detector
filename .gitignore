@@ -1,6 +1,4 @@
 /build/*.o
-/index.js
-/index.wasm
 /node_modules
 /notes
 /package-lock.json
