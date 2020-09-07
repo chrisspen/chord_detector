@@ -1,5 +1,5 @@
 {
-  "name": "chord_detector",
+  "name": "chord_detector_mega",
   "version": "1.0.5",
   "description": "Detect chords in audio streams",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/myers/chord_detector.git"
+    "url": "git+https://github.com/chrisspen/chord_detector.git"
   },
   "keywords": [
     "music",
@@ -19,12 +19,12 @@
     "chromagram",
     "dsp"
   ],
-  "author": "Myers Carpenter <myers@maski.org>",
-  "license": "GPL-3.0",
+  "author": "Chris Spencer <chrisspen@gmail.com>",
+  "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/myers/chord_detector/issues"
+    "url": "https://github.com/chrisspen/chord_detector/issues"
   },
-  "homepage": "https://github.com/myers/chord_detector#readme",
+  "homepage": "https://github.com/chrisspen/chord_detector#readme",
   "devDependencies": {
     "browserify": "^13.1.0",
     "webworkify": "^1.5.0"

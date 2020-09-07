@@ -1,4 +1,5 @@
 # Chord Detector
+================
 
 Detect what chords are being played in an [AudioBuffer] in the browser's [AudioContext].  Also exposes a [Chromagram] that will show you what notes are being played.
 
@@ -21,11 +22,3 @@ source ~/git/emsdk/emsdk_env.sh
 npm run build
 npm run serve
 ```
-
-# Demo
-
-[Demo](https://myers.github.com/chord_detector/) where you can play different sound clips of a chord and see what is detected.
-
-# Projects Built On This
-
-Let me know if you build something on this, and I will list it here.
