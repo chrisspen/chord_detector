@@ -1,4 +1,12 @@
 var currentChroma = new Float32Array(12)
+var currentPitches = new Float32Array(12*2)
+
+var chromaVisualizationCtx;
+var pitchVisualizationCtx;
+var pitchSum = 0;
+
+const referenceOctave = 3;
+const pitchCanvasWidth = 40*12*3;
 
 var webworkify = require('webworkify');
 var chromagramWorker = webworkify(require('./worker.js'))
@@ -33,34 +41,59 @@ $(function() {
 
 
   $('#chroma-visualizer').html('<canvas width="800" height="256">');
-  visualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
-  const gradient = visualizationCtx.createLinearGradient(0, 0, 0, 512);
-  gradient.addColorStop(1, '#000000');
-  gradient.addColorStop(0.75, '#2ecc71');
-  gradient.addColorStop(0.25, '#f1c40f');
-  gradient.addColorStop(0, '#e74c3c');
-  visualizationCtx.font="20px Georgia";
+  chromaVisualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
+  const gradient1 = chromaVisualizationCtx.createLinearGradient(0, 0, 0, 512);
+  gradient1.addColorStop(1, '#000000');
+  gradient1.addColorStop(0.75, '#2ecc71');
+  gradient1.addColorStop(0.25, '#f1c40f');
+  gradient1.addColorStop(0, '#e74c3c');
+  chromaVisualizationCtx.font="20px Georgia";
+
+  $('#pitches-visualizer').html('<canvas width="'+pitchCanvasWidth+'" height="256">');
+  pitchVisualizationCtx = $('#pitches-visualizer canvas').get(0).getContext('2d');
+  const gradient2 = pitchVisualizationCtx.createLinearGradient(0, 0, 0, 512);
+  gradient2.addColorStop(1, '#000000');
+  gradient2.addColorStop(0.75, '#2ecc71');
+  gradient2.addColorStop(0.25, '#f1c40f');
+  gradient2.addColorStop(0, '#e74c3c');
+  pitchVisualizationCtx.font="20px Georgia";
+
   notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
   function updateVisualization() {
     requestAnimationFrame(updateVisualization);
 
-    visualizationCtx.clearRect(0, 0, 480, 250);
-
+    chromaVisualizationCtx.clearRect(0, 0, 480, 250);
     for (let i = 0; i < currentChroma.length; i++) {
       const value = currentChroma[i];
-      visualizationCtx.fillStyle = gradient;
+      chromaVisualizationCtx.fillStyle = gradient1;
       // the max value we've seen in a chroma is >50
-      visualizationCtx.fillRect(i * 40, 250, 39, value * -5);
-
-      visualizationCtx.fillStyle = 'black';
-      visualizationCtx.fillText(notes[i], (i * 40)+3, 250);
+      chromaVisualizationCtx.fillRect(i * 40, 250, 39, value * -5);
+      chromaVisualizationCtx.fillStyle = 'black';
+      chromaVisualizationCtx.fillText(notes[i], (i * 40)+3, 250);
     }
+
+    pitchVisualizationCtx.clearRect(0, 0, pitchCanvasWidth, 250);
+    //console.log('currentPitches.length:'+currentPitches.length)
+    for (let i = 0; i < currentPitches.length; i++) {
+      const value = currentPitches[i];
+      pitchVisualizationCtx.fillStyle = gradient2;
+      // the max value we've seen in a chroma is >50
+      pitchVisualizationCtx.fillRect(i * 40, 250, 39, value * -5);
+      pitchVisualizationCtx.fillStyle = 'black';
+      pitchVisualizationCtx.fillText(notes[i%notes.length] + (referenceOctave + parseInt(i/12)), (i * 40)+3, 250);
+    }
+
   }
   updateVisualization()
 
   chromagramWorker.addEventListener('message', function (ev) {
     currentChroma = ev.data.currentChroma
     output.html("Is it " + ev.data.rootNote + " " + ev.data.quality + " " + ev.data.intervals + "?")
+    console.log('current pitches:')
+    currentPitches = ev.data.currentPitches
+    //console.log(ev.data.currentPitches)
+    pitchSum = currentPitches.reduce(function(a, b){ return a + b; }, 0);
+    console.log('pitchSum:'+pitchSum)
   })
 
   const handleSuccess = function(stream) {

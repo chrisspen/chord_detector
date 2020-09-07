@@ -28,6 +28,16 @@ Chromagram.prototype = {
     Module._free(cArray)
     return dest
   },
+
+  getPitches: function() {
+    const dest = new Float64Array(12*3) // TODO:set length dynamically?
+    const cArray = Module._malloc(dest.length * dest.BYTES_PER_ELEMENT)
+    Chromagram._getPitches(this._ptr, cArray)
+    const startOffset = cArray / dest.BYTES_PER_ELEMENT
+    dest.set(Module.HEAPF64.slice(startOffset, startOffset+dest.length))
+    Module._free(cArray)
+    return dest
+  },
 }
 
 Chromagram._constructor = Module.cwrap('Chromagram_constructor', 'number', ['number', 'number'])

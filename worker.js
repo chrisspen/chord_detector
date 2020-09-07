@@ -29,10 +29,12 @@ module.exports = function (self) {
     if (!chromagram.isReady()) return
 
     currentChroma = chromagram.getChromagram()
+    currentPitches = chromagram.getPitches()
     chordDetector.detectChord(currentChroma)
     self.postMessage({
       receivedAt: self.firstSampleArrivedAt,
       currentChroma: currentChroma,
+      currentPitches: currentPitches,
       rootNote: chordDetector.rootNote(),
       quality: chordDetector.quality(),
       intervals: chordDetector.intervals()

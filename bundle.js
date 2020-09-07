@@ -1,5 +1,13 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 var currentChroma = new Float32Array(12)
+var currentPitches = new Float32Array(12*2)
+
+var chromaVisualizationCtx;
+var pitchVisualizationCtx;
+var pitchSum = 0;
+
+const referenceOctave = 3;
+const pitchCanvasWidth = 40*12*3;
 
 var webworkify = require('webworkify');
 var chromagramWorker = webworkify(require('./worker.js'))
@@ -34,34 +42,59 @@ $(function() {
 
 
   $('#chroma-visualizer').html('<canvas width="800" height="256">');
-  visualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
-  const gradient = visualizationCtx.createLinearGradient(0, 0, 0, 512);
-  gradient.addColorStop(1, '#000000');
-  gradient.addColorStop(0.75, '#2ecc71');
-  gradient.addColorStop(0.25, '#f1c40f');
-  gradient.addColorStop(0, '#e74c3c');
-  visualizationCtx.font="20px Georgia";
+  chromaVisualizationCtx = $('#chroma-visualizer canvas').get(0).getContext('2d');
+  const gradient1 = chromaVisualizationCtx.createLinearGradient(0, 0, 0, 512);
+  gradient1.addColorStop(1, '#000000');
+  gradient1.addColorStop(0.75, '#2ecc71');
+  gradient1.addColorStop(0.25, '#f1c40f');
+  gradient1.addColorStop(0, '#e74c3c');
+  chromaVisualizationCtx.font="20px Georgia";
+
+  $('#pitches-visualizer').html('<canvas width="'+pitchCanvasWidth+'" height="256">');
+  pitchVisualizationCtx = $('#pitches-visualizer canvas').get(0).getContext('2d');
+  const gradient2 = pitchVisualizationCtx.createLinearGradient(0, 0, 0, 512);
+  gradient2.addColorStop(1, '#000000');
+  gradient2.addColorStop(0.75, '#2ecc71');
+  gradient2.addColorStop(0.25, '#f1c40f');
+  gradient2.addColorStop(0, '#e74c3c');
+  pitchVisualizationCtx.font="20px Georgia";
+
   notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
   function updateVisualization() {
     requestAnimationFrame(updateVisualization);
 
-    visualizationCtx.clearRect(0, 0, 480, 250);
-
+    chromaVisualizationCtx.clearRect(0, 0, 480, 250);
     for (let i = 0; i < currentChroma.length; i++) {
       const value = currentChroma[i];
-      visualizationCtx.fillStyle = gradient;
+      chromaVisualizationCtx.fillStyle = gradient1;
       // the max value we've seen in a chroma is >50
-      visualizationCtx.fillRect(i * 40, 250, 39, value * -5);
-
-      visualizationCtx.fillStyle = 'black';
-      visualizationCtx.fillText(notes[i], (i * 40)+3, 250);
+      chromaVisualizationCtx.fillRect(i * 40, 250, 39, value * -5);
+      chromaVisualizationCtx.fillStyle = 'black';
+      chromaVisualizationCtx.fillText(notes[i], (i * 40)+3, 250);
     }
+
+    pitchVisualizationCtx.clearRect(0, 0, pitchCanvasWidth, 250);
+    //console.log('currentPitches.length:'+currentPitches.length)
+    for (let i = 0; i < currentPitches.length; i++) {
+      const value = currentPitches[i];
+      pitchVisualizationCtx.fillStyle = gradient2;
+      // the max value we've seen in a chroma is >50
+      pitchVisualizationCtx.fillRect(i * 40, 250, 39, value * -5);
+      pitchVisualizationCtx.fillStyle = 'black';
+      pitchVisualizationCtx.fillText(notes[i%notes.length] + (referenceOctave + parseInt(i/12)), (i * 40)+3, 250);
+    }
+
   }
   updateVisualization()
 
   chromagramWorker.addEventListener('message', function (ev) {
     currentChroma = ev.data.currentChroma
     output.html("Is it " + ev.data.rootNote + " " + ev.data.quality + " " + ev.data.intervals + "?")
+    console.log('current pitches:')
+    currentPitches = ev.data.currentPitches
+    //console.log(ev.data.currentPitches)
+    pitchSum = currentPitches.reduce(function(a, b){ return a + b; }, 0);
+    console.log('pitchSum:'+pitchSum)
   })
 
   const handleSuccess = function(stream) {
@@ -1377,11 +1410,11 @@ function updateGlobalBufferAndViews(buf) {
 }
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5247952,
+    STACK_BASE = 5252048,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5072,
-    DYNAMIC_BASE = 5247952,
-    DYNAMICTOP_PTR = 4912;
+    STACK_MAX = 9168,
+    DYNAMIC_BASE = 5252048,
+    DYNAMICTOP_PTR = 9008;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1972,7 +2005,7 @@ var ASM_CONSTS = {
 
 
 
-// STATICTOP = STATIC_BASE + 4048;
+// STATICTOP = STATIC_BASE + 8144;
 /* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
 
 
@@ -2118,7 +2151,7 @@ var ASM_CONSTS = {
     }
 
   function _emscripten_get_sbrk_ptr() {
-      return 4912;
+      return 9008;
     }
 
   function _emscripten_memcpy_big(dest, src, num) {
@@ -2185,6 +2218,9 @@ var _Chromagram_isReady = Module["_Chromagram_isReady"] = createExportWrapper("C
 
 /** @type {function(...*):?} */
 var _Chromagram_getChromagram = Module["_Chromagram_getChromagram"] = createExportWrapper("Chromagram_getChromagram");
+
+/** @type {function(...*):?} */
+var _Chromagram_getPitches = Module["_Chromagram_getPitches"] = createExportWrapper("Chromagram_getPitches");
 
 /** @type {function(...*):?} */
 var _ChordDetector_constructor = Module["_ChordDetector_constructor"] = createExportWrapper("ChordDetector_constructor");
@@ -2604,6 +2640,16 @@ Chromagram.prototype = {
     Module._free(cArray)
     return dest
   },
+
+  getPitches: function() {
+    const dest = new Float64Array(12*3) // TODO:set length dynamically?
+    const cArray = Module._malloc(dest.length * dest.BYTES_PER_ELEMENT)
+    Chromagram._getPitches(this._ptr, cArray)
+    const startOffset = cArray / dest.BYTES_PER_ELEMENT
+    dest.set(Module.HEAPF64.slice(startOffset, startOffset+dest.length))
+    Module._free(cArray)
+    return dest
+  },
 }
 
 Chromagram._constructor = Module.cwrap('Chromagram_constructor', 'number', ['number', 'number'])
@@ -2794,10 +2840,12 @@ module.exports = function (self) {
     if (!chromagram.isReady()) return
 
     currentChroma = chromagram.getChromagram()
+    currentPitches = chromagram.getPitches()
     chordDetector.detectChord(currentChroma)
     self.postMessage({
       receivedAt: self.firstSampleArrivedAt,
       currentChroma: currentChroma,
+      currentPitches: currentPitches,
       rootNote: chordDetector.rootNote(),
       quality: chordDetector.quality(),
       intervals: chordDetector.intervals()

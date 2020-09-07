@@ -29,14 +29,14 @@ extern "C" {
 
     void Chromagram_getChromagram(Chromagram *c, double* chromaDest) {
         std::vector<double> chroma = c->getChromagram();
-        for(int ii = 0; ii < 12; ii++) {
+        for(int ii = 0; ii < chroma.size(); ii++) {
             chromaDest[ii] = chroma[ii];
         }
     }
 
     void Chromagram_getPitches(Chromagram *c, double* chromaDest) {
         std::vector<double> chroma = c->getPitches();
-        for(int ii = 0; ii < 12*2; ii++) { //TODO:dynamically lookup length?
+        for(int ii = 0; ii < chroma.size(); ii++) {
             chromaDest[ii] = chroma[ii];
         }
     }

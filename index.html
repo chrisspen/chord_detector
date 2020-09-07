@@ -8,16 +8,19 @@
   <body>
     <h1>Chord Detector Demo</h1>
 
-    <p>A demo of <a href="https://github.com/myers/chord_detector#readme"><code>code_detector</code></a>, a javascript chord detection library. </p>
+    <p>A demo of <a href="https://github.com/chrisspen/chord_detector#readme"><code>code_detector</code></a>, a javascript chord detection library.</p>
+
+    <p>Play one or more notes into your microphone.</p>
 
     <div style="width: 100%">
       <div style="float: left; width: 50%">
         <div id="chroma-visualizer"></div>
+        <div id="pitches-visualizer"></div>
         <h3 id="chord-detection"></h3>
       </div>
 
       <div style="float: left; width: 50%; position: relative">
-	<audio id="player" controls></audio>
+        <audio id="player" style="display:none;" controls></audio>
       </div>
     </div>
     <script src="bundle.js" async></script>
