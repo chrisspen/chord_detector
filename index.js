@@ -1832,13 +1832,13 @@ function createWasm() {
         typeof fetch === 'function') {
 
       // Ensure the fetch path is absolute.
-      //if(!wasmBinaryFile.startsWith('http')){
-        //let prefix = self.location.href.match(/http[s]*:\/\/[^\/]+/)[0];
-        //if(!prefix.endsWith('/')){
-          //prefix += '/';
-        //}
-        //wasmBinaryFile = prefix + wasmBinaryFile;
-      //}
+      if(!wasmBinaryFile.startsWith('http')){
+        let prefix = self.location.href.match(/http[s]*:\/\/[^\/]+/)[0];
+        if(!prefix.endsWith('/')){
+          prefix += '/';
+        }
+        wasmBinaryFile = prefix + wasmBinaryFile;
+      }
 
       fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function (response) {
         var result = WebAssembly.instantiateStreaming(response, info);
