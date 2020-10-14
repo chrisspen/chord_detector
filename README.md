@@ -15,8 +15,6 @@ This is a javascript wrapper that uses [Emscripten] to wrap [Adam Stark]'s [Chor
 # Building
 
 ```bash
-
-git submodule add https://github.com/chrisspen/Chord-Detector-and-Chromagram.git vendor/Chord-Detector-and-Chromagram
 git submodule update --init
 npm install webworkify
 npm install serve
