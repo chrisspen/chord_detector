@@ -2,6 +2,7 @@
 /node_modules
 /notes
 /package-lock.json
+/vendor
 *.out
 *.geany
 *.bak
