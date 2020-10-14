@@ -18,6 +18,7 @@ This is a javascript wrapper that uses [Emscripten] to wrap [Adam Stark]'s [Chor
 git submodule update --init
 npm install webworkify
 npm install serve
+npm install browserify
 source ~/git/emsdk/emsdk_env.sh
 npm run build
 npm run serve
